@@ -1,4 +1,14 @@
-FROM php:7-apache-stretch
+FROM php:7.2-apache-stretch
+
+ENV PHP_MAX_EXECUTION_TIME=30
+ENV PHP_MEMORY_LIMIT=128M
+ENV PHP_DISPLAY_ERRORS=Off
+ENV PHP_POST_MAX_SIZE=8M
+ENV PHP_UPLOAD_MAX_FILESIZE=2M
+ENV PHP_MAX_FILE_UPLOADS=20
+
+# Add the PHP configuration file
+COPY ./php.ini /usr/local/etc/php/
 
 # Install PHP extensions
 RUN apt-get update -yqq \
@@ -37,4 +47,5 @@ COPY ./vhost.conf /etc/apache2/sites-available/site.conf
 RUN a2dissite 000-default.conf && a2ensite site.conf && a2enmod rewrite
 
 # Change uid and gid of apache to docker user uid/gid
-# RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
+# (needed to solve some permissions issues when using volumes)
+RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
