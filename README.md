@@ -20,7 +20,7 @@ From your laravel project folder run:
 `docker run -d --name laravel-app -v $(pwd):/var/www/html -p 80:80 iamfreee/docker-laravel-apache:latest`
 
 ## PHP Options
-Environment variables that can be overriden:
+Environment variables that can be overridden:
 
 ```
 ENV PHP_MAX_EXECUTION_TIME=30
