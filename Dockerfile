@@ -1,4 +1,4 @@
-FROM php:7-apache
+FROM php:7-apache-stretch
 
 # Install PHP extensions
 RUN apt-get update -yqq \
@@ -10,26 +10,19 @@ RUN apt-get update -yqq \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
-        libpng12-dev \
         unzip \
         nano \
         mysql-client \
     # Install PHP Exts
-    && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-install \
-        intl \
-        mcrypt \
-        pcntl \
         pdo_mysql \
         pdo_pgsql \
         pgsql \
         zip \
         opcache \
+        ctype \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && pecl install redis \
-    && pecl install xdebug \
-    && docker-php-ext-enable redis \
     # Remove dev packages
     && apt-get remove --purge -yyq libicu-dev \
         libpq-dev \
@@ -37,13 +30,7 @@ RUN apt-get update -yqq \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
-        libpng12-dev \
     && rm -r /var/lib/apt/lists/*
-
-# Configure PHP
-RUN phpmemory_limit=512M \
-    # Increase the PHP Memory limit to 512mb for both Apache and the CLI
-    && sed -i 's/memory_limit = .*/memory_limit = '${phpmemory_limit}'/' ${PHP_INI_DIR}/php.ini 
 
 # Add apache and php config for Laravel
 COPY ./vhost.conf /etc/apache2/sites-available/site.conf
